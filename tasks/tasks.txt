@@ -1,0 +1,30 @@
+Mutable vs Immutable
+Shallow Copy vs Deep Copy
+is vs ==
+*args vs **kwargs
+staticmethod vs classmethod
+MRO
+Monkey Patching
+Closures
+Late Binding
+GIL
+Context Manager
+Descriptors
+Metaclasses
+__slots__
+Generators vs Iterators
+Coroutine vs Thread
+Async vs Multithreading
+Hashing
+Dictionary Internals
+List vs Tuple
+Set Internals
+Core Python (syntax, functions, collections)
+OOP and the Python data model (magic methods)
+Iterators, generators, decorators, and context managers
+Exception handling, modules, packages, and typing
+Concurrency: threading, multiprocessing, and asyncio
+Memory management, GIL, descriptors, metaclasses, and internals
+Performance optimization, testing, and design patterns
+Framework-specific topics (Django, Flask, FastAPI) and ORMs
+System design for Python applications and production best practices

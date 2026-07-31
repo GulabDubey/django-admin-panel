@@ -1,0 +1,32 @@
+pip install django djangorestframework
+django-admin startproject config .
+cd myproject
+python manage.py startapp api
+python manage.py makemigrations
+python manage.py migrate
+
+Django (MVT-Model view Template architecture)-> High level python web framework that provides almost all features that needs for any web application.
+Example:
+Authentication
+Admin Panel
+ORM
+Forms
+Sessions
+Middleware
+Security
+Caching
+Email
+Template Engine
+
+Django-admin setup:
+pip install django
+pip show django
+django-admin --version
+django-admin startproject config .
+pip install mysqlclient
+python manage.py startapp core
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+python manage.py makemigrations
+python manage.py migrate

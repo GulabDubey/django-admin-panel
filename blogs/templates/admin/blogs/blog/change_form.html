@@ -1,0 +1,132 @@
+{% extends "admin/change_form.html" %}
+
+
+{% block after_field_sets %}
+
+<script>
+
+document.addEventListener(
+"DOMContentLoaded",
+function(){
+
+
+const titleInput =
+document.querySelector(
+"#id_title"
+);
+
+
+if(titleInput){
+
+
+let button =
+document.createElement(
+"button"
+);
+
+
+button.type="button";
+
+button.innerHTML =
+"🤖 Generate Blog";
+
+
+button.style.marginLeft =
+"10px";
+
+button.className =
+"default";
+
+
+
+button.onclick=function(){
+
+
+let topic =
+titleInput.value;
+
+
+if(!topic){
+
+alert(
+"Enter blog topic first"
+);
+
+return;
+
+}
+
+
+
+fetch(
+"/admin/blogs/blog/generate-blog/",
+{
+
+method:"POST",
+
+headers:{
+
+"X-CSRFToken":
+"{{ csrf_token }}",
+
+"Content-Type":
+"application/json"
+
+},
+
+body:JSON.stringify({
+
+topic:topic
+
+})
+
+}
+
+)
+
+.then(
+response=>response.json()
+)
+
+.then(
+data=>{
+
+
+document.querySelector(
+"#id_title"
+).value=data.title;
+
+
+document.querySelector(
+"#id_content"
+).value=data.content;
+
+
+document.querySelector(
+"#id_meta_description"
+).value=
+data.meta;
+
+
+}
+
+);
+
+
+}
+
+
+titleInput.parentElement.appendChild(
+button
+);
+
+
+}
+
+
+});
+
+</script>
+
+
+{% endblock %}

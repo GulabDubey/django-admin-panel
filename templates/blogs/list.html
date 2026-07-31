@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Blogs</title>
+</head>
+
+
+<body>
+
+
+<h1>Latest Blogs</h1>
+
+
+{% for blog in blogs %}
+
+
+<div>
+
+    {% if blog.image %}
+        <img 
+        src="{{ blog.image.url }}"
+        width="300">
+    {% endif %}
+
+
+    <h2>
+        <a href="{% url 'blog_detail' blog.slug %}">
+            {{ blog.title }}
+        </a>
+    </h2>
+
+
+    <p>
+        {{ blog.short_description }}
+    </p>
+
+
+    <small>
+        {{ blog.created_at }}
+    </small>
+
+
+</div>
+
+
+<hr>
+
+
+{% empty %}
+
+<p>
+No blogs found.
+</p>
+
+
+{% endfor %}
+
+
+</body>
+
+</html>
