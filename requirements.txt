@@ -7,3 +7,4 @@ Pillow
 djangorestframework-simplejwt
 crewai
 langchain-anthropic
+razorpay
