@@ -2,16 +2,19 @@ import json
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.views.decorators.http import require_POST
 
+from core.ratelimit import ratelimit
 from .models import Profile
 
 
 @require_POST
+@ratelimit("register", limit=10, period=3600)
 def register_view(request):
     try:
         data = json.loads(request.body)
@@ -35,8 +38,10 @@ def register_view(request):
     if password != confirm_password:
         return JsonResponse({"error": "Passwords do not match.", "field": "confirm_password"}, status=400)
 
-    if len(password) < 8:
-        return JsonResponse({"error": "Password must be at least 8 characters.", "field": "password"}, status=400)
+    try:
+        validate_password(password, user=User(username=email, email=email, first_name=name[:150]))
+    except ValidationError as exc:
+        return JsonResponse({"error": " ".join(exc.messages), "field": "password"}, status=400)
 
     if User.objects.filter(email__iexact=email).exists():
         return JsonResponse({"error": "An account with this email already exists.", "field": "email"}, status=400)
@@ -50,6 +55,7 @@ def register_view(request):
 
 
 @require_POST
+@ratelimit("login", limit=10, period=300)
 def login_view(request):
     try:
         data = json.loads(request.body)

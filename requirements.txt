@@ -1,10 +1,23 @@
-django
-djangorestframework
-django-cors-headers
-python-dotenv
-mysqlclient
-Pillow
-djangorestframework-simplejwt
-crewai
-langchain-anthropic
-razorpay
+# Core
+Django==5.2.18
+python-dotenv==1.2.4
+mysqlclient==2.3.0
+Pillow==12.3.0
+redis==8.1.0
+
+# API
+djangorestframework==3.18.3
+djangorestframework-simplejwt==5.5.1
+django-cors-headers==4.9.0
+
+# HTTP client / payments
+razorpay==2.0.1
+requests==2.34.2
+
+# AI blog generation
+crewai==1.15.23
+langchain-anthropic==1.7.5
+
+# Production serving
+gunicorn==26.2.0
+whitenoise==6.12.0

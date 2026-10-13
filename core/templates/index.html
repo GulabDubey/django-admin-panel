@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <script src="http://127.0.0.1:8001/widget/chatbot.js"></script>
+    {% if CHATBOT_WIDGET_URL %}<script src="{{ CHATBOT_WIDGET_URL }}"></script>{% endif %}
     <style>
         :root {
             --bg: #0B1220;
