@@ -7,12 +7,12 @@ from .models import Website, generate_site_key
 
 @admin.register(Website)
 class WebsiteAdmin(admin.ModelAdmin):
-    list_display = ("domain", "name", "owner", "site_key", "is_active", "subscription_status", "created_at")
+    list_display = ("domain", "name", "owner", "collection_name", "site_key", "is_active", "subscription_status", "created_at")
     list_filter = ("is_active", "created_at")
     search_fields = ("domain", "name", "owner__email", "owner__username", "site_key")
     autocomplete_fields = ("owner",)
     readonly_fields = ("site_key", "subscription_status", "created_at", "updated_at")
-    fields = ("name", "domain", "owner", "is_active", "site_key", "subscription_status", "created_at", "updated_at")
+    fields = ("name", "domain", "owner", "collection_name", "is_active", "site_key", "subscription_status", "created_at", "updated_at")
     actions = ("regenerate_site_keys",)
     list_per_page = 25
 

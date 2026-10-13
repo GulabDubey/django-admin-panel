@@ -2,6 +2,7 @@ import secrets
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 from django.db import models
 
 from .domains import normalize_domain
@@ -35,6 +36,17 @@ class Website(models.Model):
         default=generate_site_key,
         editable=False,
         help_text="Public key embedded in the customer's chatbot widget.",
+    )
+    collection_name = models.CharField(
+        max_length=100,
+        blank=True,
+        validators=[
+            RegexValidator(
+                r"^[a-zA-Z0-9_-]+$",
+                "Use only letters, numbers, hyphens and underscores.",
+            )
+        ],
+        help_text="Knowledge collection the chatbot answers from (the crawl's collection, e.g. FlaskshopV2).",
     )
     is_active = models.BooleanField(
         default=True,
