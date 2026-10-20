@@ -1,9 +1,9 @@
 # NextGen AI — Django site & admin
 
 Landing page with dynamic pricing plans, Razorpay checkout, user accounts, a blog,
-and an admin with AI blog generation (CrewAI + Anthropic).
+and an admin with AI blog generation (Anthropic).
 
-Stack: Django 5.2 · MySQL · Redis · gunicorn · nginx · WhiteNoise · Python 3.11
+Stack: Django 5.2 · MySQL · gunicorn · nginx · WhiteNoise · Python 3.11
 
 ## Configuration
 
@@ -32,7 +32,7 @@ Run tests: `.venv/bin/python manage.py test`
 
 ```bash
 cp .env.example .env               # fill in all secrets, real hosts, DB user/passwords
-docker compose up -d --build       # nginx → gunicorn → MySQL + Redis
+docker compose up -d --build       # nginx → gunicorn → MySQL
 docker compose exec web python manage.py seed_packages      # first deploy only
 docker compose exec web python manage.py createsuperuser
 ```
@@ -97,6 +97,6 @@ public `site_key` is generated). A site is authorized while its owner has a
 - `python manage.py check --deploy` passes (HSTS preload is opt-in by design)
 - `DJANGO_ADMIN_URL` set to a non-default path
 - `DJANGO_ADMINS` + SMTP settings set so 500 errors are emailed
-- `REDIS_URL` set (rate limits on login/register/checkout rely on a shared cache)
+- Cache table exists (`manage.py createcachetable`; rate limits on login/register/checkout use it)
 - `CHATBOT_WIDGET_URL` points to the production widget (HTTPS) or is empty
 - `CHATBOT_SERVICE_TOKENS` set (long random value), shared only with the chatbot service

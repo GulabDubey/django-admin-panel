@@ -1,4 +1,4 @@
-# Production stack: nginx → gunicorn (Django) → MySQL + Redis.
+# Production stack: nginx → gunicorn (Django) → MySQL.
 #
 #   cp .env.example .env   # then fill in secrets
 #   docker compose up -d --build
@@ -23,16 +23,6 @@ services:
       retries: 10
       start_period: 30s
 
-  redis:
-    image: redis:7-alpine
-    restart: unless-stopped
-    command: redis-server --save "" --appendonly no
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-
   web:
     build: .
     restart: unless-stopped
@@ -40,7 +30,6 @@ services:
     environment:
       DB_HOST: db
       DB_PORT: "3306"
-      REDIS_URL: redis://redis:6379/1
       GUNICORN_FORWARDED_ALLOW_IPS: "*"
     extra_hosts:
       # Lets CRAWLER_API_URL reach a service on the host (Linux; built in on Mac/Windows).
@@ -49,8 +38,6 @@ services:
       - media:/app/media
     depends_on:
       db:
-        condition: service_healthy
-      redis:
         condition: service_healthy
 
   nginx:

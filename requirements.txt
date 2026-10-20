@@ -3,7 +3,6 @@ Django==5.2.18
 python-dotenv==1.2.4
 PyMySQL==1.1.1
 Pillow==12.3.0
-redis==8.1.0
 
 # API
 djangorestframework==3.18.3

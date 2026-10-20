@@ -141,25 +141,17 @@ DATABASES = {
 
 
 # ---------------------------------------------------------------------------
-# Cache (Redis in production so rate limits are shared across workers)
+# Cache (stored in MySQL so rate limits are shared across workers and
+# serverless instances). Create the table once with `manage.py createcachetable`.
 # ---------------------------------------------------------------------------
 
-REDIS_URL = env("REDIS_URL")
-
-if REDIS_URL:
-    CACHES = {
-        "default": {
-            "BACKEND": "django.core.cache.backends.redis.RedisCache",
-            "LOCATION": REDIS_URL,
-            "KEY_PREFIX": "django_app",
-        }
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "django_cache",
+        "KEY_PREFIX": "django_app",
     }
-else:
-    CACHES = {
-        "default": {
-            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        }
-    }
+}
 
 
 # ---------------------------------------------------------------------------
