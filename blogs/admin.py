@@ -26,7 +26,7 @@ def generate_blog_view(request):
     if not topic:
         return JsonResponse({"error": "Enter a blog topic first."}, status=400)
 
-    # Imported lazily: crewai is heavy and only needed for this view.
+    # Imported lazily: only needed for this view.
     from ai_agents.blog_crew import generate_blog
 
     try:

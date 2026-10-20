@@ -15,8 +15,7 @@ razorpay==2.0.1
 requests==2.34.2
 
 # AI blog generation
-crewai==1.15.23
-langchain-anthropic==1.7.5
+anthropic==1.11.0
 
 # Production serving
 gunicorn==26.2.0

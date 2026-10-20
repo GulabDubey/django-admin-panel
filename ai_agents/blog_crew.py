@@ -1,71 +1,95 @@
-from crewai import Crew
+import anthropic
+from django.conf import settings
 
 
-from .agents import (
-    get_research_agent,
-    get_writer_agent,
-    get_reviewer_agent
-)
+RESEARCH_SYSTEM = """
+You are a Blog Research Specialist: an expert researcher
+who prepares detailed notes for professional writers.
+Research topics deeply. Find accurate information,
+trends, examples and facts.
+"""
+
+WRITER_SYSTEM = """
+You are an SEO Blog Writer: an experienced technical
+content writer who creates high quality SEO optimized
+blog articles.
+"""
+
+REVIEWER_SYSTEM = """
+You are a Senior Content Editor working for a technology
+publication. Improve blog quality, SEO, readability
+and accuracy.
+"""
 
 
-from .tasks import create_tasks
+def _model():
+    # Settings may use the LiteLLM-style "anthropic/<model>" name.
+    return settings.ANTHROPIC_MODEL.removeprefix("anthropic/")
 
+
+def _ask(client, system, prompt):
+
+    response = client.messages.create(
+        model=_model(),
+        max_tokens=16000,
+        system=system,
+        messages=[{"role": "user", "content": prompt}],
+    )
+
+    return "".join(
+        block.text for block in response.content if block.type == "text"
+    )
 
 
 def generate_blog(topic):
 
+    client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
 
-    research_agent = (
-        get_research_agent()
-    )
+    research = _ask(client, RESEARCH_SYSTEM, f"""
+Research this blog topic:
+{topic}
 
-    writer_agent = (
-        get_writer_agent()
-    )
+Provide:
+- Important facts
+- Latest trends
+- User problems
+- Content outline
+- Keywords
 
-    reviewer_agent = (
-        get_reviewer_agent()
-    )
+Return a research document containing facts, outline and keywords.
+""")
 
+    draft = _ask(client, WRITER_SYSTEM, f"""
+Write a complete SEO blog on "{topic}" using these research notes:
 
-    tasks = create_tasks(
+<research>
+{research}
+</research>
 
-        topic,
+Format:
+TITLE:
+META DESCRIPTION:
+CONTENT:
 
-        research_agent,
+Requirements:
+- SEO friendly
+- Clear headings
+- Examples
+- Conclusion
+""")
 
-        writer_agent,
+    return _ask(client, REVIEWER_SYSTEM, f"""
+Review this blog article:
 
-        reviewer_agent
+<article>
+{draft}
+</article>
 
-    )
+Improve:
+- Grammar
+- SEO
+- Structure
+- Accuracy
 
-
-
-    crew = Crew(
-
-        agents=[
-
-            research_agent,
-
-            writer_agent,
-
-            reviewer_agent
-
-        ],
-
-        tasks=tasks,
-
-
-        process="sequential",
-
-        verbose=True
-
-    )
-
-
-
-    result = crew.kickoff()
-
-
-    return result
+Return only the final, production-ready article.
+""")

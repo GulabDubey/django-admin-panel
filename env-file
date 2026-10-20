@@ -1,0 +1,37 @@
+# Local production-mode run (plain HTTP on localhost). See .env.example.
+DJANGO_DEBUG=True
+DJANGO_SECRET_KEY=zrtfysL6lDB9r_52BAkyFV8zV1mUYicTGhmtD-4-C3XdaPuXhljenNvbDY1jF2pb00o
+DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
+DJANGO_CSRF_TRUSTED_ORIGINS=http://localhost:8000,http://127.0.0.1:8000
+DJANGO_ADMIN_URL=admin/
+
+# Plain HTTP locally — keep these True on a real HTTPS deployment.
+DJANGO_BEHIND_PROXY=False
+DJANGO_SECURE_SSL_REDIRECT=False
+DJANGO_SECURE_COOKIES=False
+DJANGO_SECURE_HSTS_SECONDS=0
+
+DB_NAME=django_app
+DB_USER=root
+DB_PASSWORD=
+DB_HOST=127.0.0.1
+DB_PORT=3306
+
+REDIS_URL=redis://127.0.0.1:6379/1
+
+RAZORPAY_KEY_ID=rzp_test_Tl58gR1nJDL1UA
+RAZORPAY_KEY_SECRET=KA9duVp2ZspARJoX8VsbOWkY
+RAZORPAY_WEBHOOK_SECRET=
+
+ANTHROPIC_API_KEY=
+CHATBOT_WIDGET_URL=
+
+GUNICORN_BIND=127.0.0.1:8000
+GUNICORN_WORKERS=3
+
+CRAWLER_API_URL=http://127.0.0.1:8010/api/v1/extract-website-data
+CRAWLER_API_TOKEN=gen5-ctoFAMN_i8FGJSRMjobNJjDYg5pv4MbWVdQIwY27VUeLW3oNIO87MSt4BC6
+CRAWLER_API_TIMEOUT=900
+
+# Server-to-server token(s) for the chatbot FastAPI service (comma-separated for rotation).
+CHATBOT_SERVICE_TOKENS=GbYzKwmQcmeB9-cmf_rQq5lZsG7mHC_DhMDHuDFuApglJvjMjpFirPyq7HoaZOjY
