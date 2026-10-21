@@ -48,6 +48,18 @@ class Website(models.Model):
         ],
         help_text="Knowledge collection the chatbot answers from (the crawl's collection, e.g. FlaskshopV2).",
     )
+    payment = models.ForeignKey(
+        "payments.Payment",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="websites",
+        limit_choices_to={"status": "paid", "package__isnull": False},
+        help_text=(
+            "Paid payment whose plan covers this website. Leave empty to use the "
+            "owner's latest paid plan (payments made by them or with their email)."
+        ),
+    )
     is_active = models.BooleanField(
         default=True,
         help_text="Untick to block the chatbot on this website regardless of subscription.",

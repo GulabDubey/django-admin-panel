@@ -10,7 +10,7 @@ from django.views.decorators.http import require_POST
 
 from core.ratelimit import ratelimit
 from core.service_auth import require_service_token
-from payments.subscriptions import latest_subscription
+from payments.subscriptions import website_subscription
 from .domains import normalize_domain
 from .models import Website
 
@@ -49,7 +49,7 @@ def verify_subscription(request):
         return deny("invalid_request", status=400)
 
     try:
-        website = Website.objects.select_related("owner").filter(site_key=site_key).first()
+        website = Website.objects.select_related("owner", "payment__package").filter(site_key=site_key).first()
 
         if website is None:
             return deny("invalid_site_key")
@@ -61,7 +61,7 @@ def verify_subscription(request):
             )
             return deny("domain_not_allowed")
 
-        subscription = latest_subscription(website.owner)
+        subscription = website_subscription(website)
     except DatabaseError:
         logger.exception("Database error while verifying chatbot subscription")
         return deny("service_unavailable", status=503)

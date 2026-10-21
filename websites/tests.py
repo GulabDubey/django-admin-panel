@@ -219,6 +219,36 @@ class VerifySubscriptionTests(TestCase):
         self.pay(user=self.customer, package=None)
         self.assertDenied(self.verify(), "subscription_inactive")
 
+    # --- Attached payment ----------------------------------------------------------
+
+    def attach(self, payment):
+        self.website.payment = payment
+        self.website.save()
+
+    def test_attached_payment_from_another_email_authorizes(self):
+        self.attach(self.pay(email="billing@another-company.com", days_ago=3))
+        response = self.verify()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["plan"], "Professional")
+
+    def test_attached_payment_overrides_owner_payments(self):
+        self.pay(user=self.customer, days_ago=1)  # active, but not the attached one
+        self.attach(self.pay(email="billing@another-company.com", days_ago=40))
+        self.assertDenied(self.verify(), "subscription_expired")
+
+    def test_attached_payment_that_is_no_longer_paid(self):
+        payment = self.pay(email="billing@another-company.com")
+        self.attach(payment)
+        Payment.objects.filter(pk=payment.pk).update(status="failed")
+        self.assertDenied(self.verify(), "subscription_inactive")
+
+    def test_deleting_attached_payment_falls_back_to_owner(self):
+        payment = self.pay(email="billing@another-company.com")
+        self.attach(payment)
+        self.pay(user=self.customer)
+        payment.delete()
+        self.assertEqual(self.verify().status_code, 200)
+
     # --- Failures ----------------------------------------------------------------
 
     def test_database_error_returns_503_without_details(self):

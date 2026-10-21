@@ -11,6 +11,8 @@ Business rules (no separate subscription table exists):
   - Renewals are new paid payments; the latest-expiring one wins.
   - A payment belongs to a customer through `user`, or — for guest checkouts
     where `user` is empty — through a case-insensitive `buyer_email` match.
+  - A website with a payment attached uses only that payment; otherwise it
+    uses its owner's latest subscription.
 """
 
 from dataclasses import dataclass
@@ -42,6 +44,18 @@ def customer_payments(user):
     return Payment.objects.filter(owned)
 
 
+def payment_subscription(payment):
+    """The subscription a single payment grants, or None if it grants none."""
+    if payment is None or payment.status != "paid" or payment.package is None:
+        return None
+    return Subscription(
+        payment_id=payment.pk,
+        plan=payment.package.name,
+        started_at=payment.created_at,
+        expires_at=payment.created_at + timedelta(days=payment.package.duration),
+    )
+
+
 def latest_subscription(user):
     """The paid subscription with the latest expiry (active or not), or None."""
     payments = (
@@ -52,15 +66,17 @@ def latest_subscription(user):
 
     latest = None
     for payment in payments:
-        subscription = Subscription(
-            payment_id=payment.pk,
-            plan=payment.package.name,
-            started_at=payment.created_at,
-            expires_at=payment.created_at + timedelta(days=payment.package.duration),
-        )
+        subscription = payment_subscription(payment)
         if latest is None or subscription.expires_at > latest.expires_at:
             latest = subscription
     return latest
+
+
+def website_subscription(website):
+    """The attached payment's subscription, else the owner's latest one."""
+    if website.payment_id:
+        return payment_subscription(website.payment)
+    return latest_subscription(website.owner)
 
 
 def active_subscription(user):

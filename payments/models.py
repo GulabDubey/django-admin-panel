@@ -43,4 +43,5 @@ class Payment(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
-        return f"{self.buyer_email} - {self.package} - {self.status}"
+        created = f" · {self.created_at:%d %b %Y}" if self.created_at else ""
+        return f"#{self.pk} · {self.buyer_email} · {self.package} · {self.status}{created}"
