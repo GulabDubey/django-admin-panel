@@ -1,0 +1,24 @@
+{% extends "admin/change_form.html" %}
+{% load static i18n admin_urls %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'llm/provider_form.css' %}">
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:websites_website_changelist' %}">Websites</a>
+{% if llm_website %}&rsaquo; <a href="{% url 'admin:websites_website_change' llm_website.pk %}">{{ llm_website }}</a>{% endif %}
+&rsaquo; {% if add %}Add LLM provider{% else %}{{ original|truncatewords:"18" }}{% endif %}
+</div>
+{% endblock %}
+
+{% block admin_change_form_document_ready %}
+{{ block.super }}
+{{ llm_presets|json_script:"llm-presets" }}
+{{ llm_existing_models|json_script:"llm-existing-models" }}
+<script id="llm-form-config" type="application/json">{"loadUrl": "{{ llm_load_models_url|escapejs }}", "providerId": "{{ original.pk|default_if_none:''|escapejs }}", "csrf": "{{ csrf_token|escapejs }}"}</script>
+<script src="{% static 'llm/provider_form.js' %}"></script>
+{% endblock %}

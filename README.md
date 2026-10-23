@@ -92,6 +92,38 @@ Register customer sites in Admin → **Chatbot websites** (owner, domain; the
 public `site_key` is generated). A site is authorized while its owner has a
 `paid` payment whose `created_at + package.duration` days is in the future.
 
+## LLM providers (chatbot AI model)
+
+Each website has its own LLM providers: open Admin → **Websites** → a website →
+**AI model** → **+ Add LLM provider**. Pick a provider (Anthropic, OpenAI,
+Gemini, Groq, OpenRouter, DeepSeek, Mistral, xAI, Ollama or a custom
+OpenAI-compatible endpoint), follow its *Get an API key* link, paste the key
+(stored encrypted with `LLM_ENCRYPTION_KEYS`) and click **Load models** to tick
+the models the key can use. The website's chatbot uses its **active** provider
+(first one added, or tick *Active for this website*) and that provider's ★
+default model.
+
+web-agent fetches this per site from `POST /api/internal/chatbot/llm-config/`
+(same service token as verify-subscription). Websites without an active
+provider use web-agent's own `.env` Anthropic settings. Rotate the encryption
+key with `manage.py rotate_llm_keys` (new key first in `LLM_ENCRYPTION_KEYS`).
+
+## Chatbot question limits
+
+On each website (Admin → Websites → **Question limit**) set *Questions per
+visitor* (0 = unlimited), the period (hour / day / week / month / in total) and
+an optional message shown when the limit is reached. The page shows the
+current period's usage.
+
+Visitors are anonymous: the widget keeps a random visitor ID in the browser,
+sealed into its signed token. web-agent calls
+`POST /api/internal/chatbot/questions/consume/` before each AI reply and
+`.../questions/refund/` if the reply fails; counters live in MySQL
+(`websites_questionusage`). Each hashed IP may ask up to
+`CHATBOT_IP_QUESTION_MULTIPLIER` (default 5) × the limit, so clearing browser
+storage doesn't reset it. Run `manage.py prune_question_usage` daily (cron) to
+delete counters older than 45 days.
+
 ## Pre-launch checklist
 
 - `python manage.py check --deploy` passes (HSTS preload is opt-in by design)
@@ -100,3 +132,4 @@ public `site_key` is generated). A site is authorized while its owner has a
 - Cache table exists (`manage.py createcachetable`; rate limits on login/register/checkout use it)
 - `CHATBOT_WIDGET_URL` points to the production widget (HTTPS) or is empty
 - `CHATBOT_SERVICE_TOKENS` set (long random value), shared only with the chatbot service
+- `LLM_ENCRYPTION_KEYS` set and backed up (the same value everywhere this database is used)

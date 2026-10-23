@@ -80,6 +80,7 @@ INSTALLED_APPS = [
     'payments',
     'crawler',
     'websites',
+    'llm',
 ]
 
 MIDDLEWARE = [
@@ -340,3 +341,12 @@ CRAWLER_API_TIMEOUT = env_int("CRAWLER_API_TIMEOUT", 900)
 # "Authorization: Bearer <token>" to /api/internal/chatbot/verify-subscription/.
 # Comma-separated so a new token can be added before the old one is removed.
 CHATBOT_SERVICE_TOKENS = env_list("CHATBOT_SERVICE_TOKENS")
+
+# Fernet key(s) that encrypt LLM provider API keys in the database.
+# Comma-separated: the first encrypts, all decrypt (for rotation).
+LLM_ENCRYPTION_KEYS = env_list("LLM_ENCRYPTION_KEYS")
+
+# Chatbot question limits (Website.question_limit): visitors who clear their
+# browser storage get a new anonymous ID, so each hashed IP may also ask up to
+# this many times the per-visitor limit. 0 disables the IP backstop.
+CHATBOT_IP_QUESTION_MULTIPLIER = env_int("CHATBOT_IP_QUESTION_MULTIPLIER", 5)

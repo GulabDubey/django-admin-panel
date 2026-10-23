@@ -281,6 +281,7 @@ class LocalDomainTests(TestCase):
     def add_via_admin(self, domain):
         return self.client.post("/admin/websites/website/add/", {
             "name": "Local app", "domain": domain, "owner": self.owner.pk, "is_active": "on",
+            "question_limit": "0", "question_limit_period": "day",
         })
 
     def verify(self, site_key, domain):
